@@ -7,481 +7,92 @@
   <link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Syne:wght@400;600;800&display=swap" rel="stylesheet"/>
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
     :root {
-      --bg: #0a0a0f;
-      --surface: #12121a;
-      --surface2: #1a1a26;
-      --border: #2a2a40;
-      --accent: #00e5ff;
-      --accent2: #7c3aed;
-      --green: #00ff88;
-      --red: #ff4d6d;
-      --text: #e8e8f0;
-      --muted: #6b6b8a;
-      --font-mono: 'Space Mono', monospace;
-      --font-sans: 'Syne', sans-serif;
+      --bg: #0a0a0f; --surface: #12121a; --surface2: #1a1a26;
+      --border: #2a2a40; --accent: #00e5ff; --accent2: #7c3aed;
+      --green: #00ff88; --red: #ff4d6d; --text: #e8e8f0; --muted: #6b6b8a;
+      --font-mono: 'Space Mono', monospace; --font-sans: 'Syne', sans-serif;
     }
-
-    body {
-      background: var(--bg);
-      color: var(--text);
-      font-family: var(--font-sans);
-      min-height: 100vh;
-      overflow-x: hidden;
-    }
-
+    body { background: var(--bg); color: var(--text); font-family: var(--font-sans); min-height: 100vh; overflow-x: hidden; }
     body::before {
-      content: '';
-      position: fixed;
-      inset: 0;
-      background-image:
-        linear-gradient(rgba(0,229,255,0.03) 1px, transparent 1px),
-        linear-gradient(90deg, rgba(0,229,255,0.03) 1px, transparent 1px);
+      content: ''; position: fixed; inset: 0; pointer-events: none; z-index: 0;
+      background-image: linear-gradient(rgba(0,229,255,0.03) 1px, transparent 1px), linear-gradient(90deg, rgba(0,229,255,0.03) 1px, transparent 1px);
       background-size: 40px 40px;
-      pointer-events: none;
-      z-index: 0;
     }
-
-    .container {
-      max-width: 860px;
-      margin: 0 auto;
-      padding: 40px 20px 80px;
-      position: relative;
-      z-index: 1;
-    }
-
-    header {
-      text-align: center;
-      margin-bottom: 48px;
-    }
-
-    .logo {
-      display: inline-flex;
-      align-items: center;
-      gap: 10px;
-      margin-bottom: 12px;
-    }
-
-    .logo-icon {
-      width: 42px; height: 42px;
-      background: linear-gradient(135deg, var(--accent), var(--accent2));
-      border-radius: 10px;
-      display: grid;
-      place-items: center;
-      font-size: 20px;
-    }
-
-    h1 {
-      font-family: var(--font-sans);
-      font-size: clamp(28px, 5vw, 42px);
-      font-weight: 800;
-      letter-spacing: -1px;
-      background: linear-gradient(90deg, var(--accent), var(--accent2));
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      background-clip: text;
-    }
-
-    .subtitle {
-      color: var(--muted);
-      font-family: var(--font-mono);
-      font-size: 12px;
-      letter-spacing: 2px;
-      text-transform: uppercase;
-      margin-top: 6px;
-    }
-
-    .card {
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: 16px;
-      overflow: hidden;
-      margin-bottom: 20px;
-      transition: border-color 0.3s;
-    }
-
+    .container { max-width: 860px; margin: 0 auto; padding: 40px 20px 80px; position: relative; z-index: 1; }
+    header { text-align: center; margin-bottom: 48px; }
+    .logo { display: inline-flex; align-items: center; gap: 10px; margin-bottom: 12px; }
+    .logo-icon { width: 42px; height: 42px; background: linear-gradient(135deg, var(--accent), var(--accent2)); border-radius: 10px; display: grid; place-items: center; font-size: 20px; }
+    h1 { font-family: var(--font-sans); font-size: clamp(28px, 5vw, 42px); font-weight: 800; letter-spacing: -1px; background: linear-gradient(90deg, var(--accent), var(--accent2)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+    .subtitle { color: var(--muted); font-family: var(--font-mono); font-size: 12px; letter-spacing: 2px; text-transform: uppercase; margin-top: 6px; }
+    .card { background: var(--surface); border: 1px solid var(--border); border-radius: 16px; overflow: hidden; margin-bottom: 20px; transition: border-color 0.3s; }
     .card:hover { border-color: rgba(0,229,255,0.3); }
-
-    .card-header {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: 16px 20px;
-      border-bottom: 1px solid var(--border);
-      background: var(--surface2);
-    }
-
-    .card-title {
-      font-family: var(--font-mono);
-      font-size: 11px;
-      letter-spacing: 2px;
-      text-transform: uppercase;
-      color: var(--accent);
-    }
-
-    .badge {
-      font-family: var(--font-mono);
-      font-size: 10px;
-      padding: 3px 10px;
-      border-radius: 20px;
-      letter-spacing: 1px;
-    }
-
+    .card-header { display: flex; align-items: center; justify-content: space-between; padding: 16px 20px; border-bottom: 1px solid var(--border); background: var(--surface2); }
+    .card-title { font-family: var(--font-mono); font-size: 11px; letter-spacing: 2px; text-transform: uppercase; color: var(--accent); }
+    .badge { font-family: var(--font-mono); font-size: 10px; padding: 3px 10px; border-radius: 20px; letter-spacing: 1px; }
     .badge-green { background: rgba(0,255,136,0.1); color: var(--green); border: 1px solid rgba(0,255,136,0.3); }
-    .badge-red   { background: rgba(255,77,109,0.1); color: var(--red);   border: 1px solid rgba(255,77,109,0.3); }
     .badge-muted { background: rgba(107,107,138,0.1); color: var(--muted); border: 1px solid rgba(107,107,138,0.2); }
-
     .card-body { padding: 20px; }
-
-    .email-row {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      flex-wrap: wrap;
-    }
-
-    .email-address {
-      flex: 1;
-      min-width: 0;
-      background: var(--bg);
-      border: 1px solid var(--border);
-      border-radius: 10px;
-      padding: 14px 18px;
-      font-family: var(--font-mono);
-      font-size: 15px;
-      color: var(--accent);
-      letter-spacing: 0.5px;
-      word-break: break-all;
-      cursor: pointer;
-      transition: border-color 0.2s, background 0.2s;
-      position: relative;
-    }
-
+    .email-row { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
+    .email-address { flex: 1; min-width: 0; background: var(--bg); border: 1px solid var(--border); border-radius: 10px; padding: 14px 60px 14px 18px; font-family: var(--font-mono); font-size: 15px; color: var(--accent); letter-spacing: 0.5px; word-break: break-all; cursor: pointer; transition: border-color 0.2s, background 0.2s; position: relative; }
     .email-address:hover { border-color: var(--accent); background: rgba(0,229,255,0.05); }
-
-    .copy-hint {
-      position: absolute;
-      right: 10px; top: 50%;
-      transform: translateY(-50%);
-      font-size: 10px;
-      color: var(--muted);
-      letter-spacing: 1px;
-    }
-
-    .btn {
-      padding: 13px 22px;
-      border-radius: 10px;
-      border: none;
-      cursor: pointer;
-      font-family: var(--font-mono);
-      font-size: 12px;
-      letter-spacing: 1px;
-      font-weight: 700;
-      transition: all 0.2s;
-      display: flex;
-      align-items: center;
-      gap: 6px;
-      white-space: nowrap;
-    }
-
-    .btn-primary {
-      background: linear-gradient(135deg, var(--accent), #00b4d8);
-      color: #000;
-    }
+    .copy-hint { position: absolute; right: 10px; top: 50%; transform: translateY(-50%); font-size: 10px; color: var(--muted); letter-spacing: 1px; font-family: var(--font-mono); }
+    .btn { padding: 13px 22px; border-radius: 10px; border: none; cursor: pointer; font-family: var(--font-mono); font-size: 12px; letter-spacing: 1px; font-weight: 700; transition: all 0.2s; display: flex; align-items: center; gap: 6px; white-space: nowrap; }
+    .btn-primary { background: linear-gradient(135deg, var(--accent), #00b4d8); color: #000; }
     .btn-primary:hover { opacity: 0.85; transform: translateY(-1px); }
-    .btn-primary:active { transform: translateY(0); }
-
-    .btn-secondary {
-      background: var(--surface2);
-      color: var(--text);
-      border: 1px solid var(--border);
-    }
+    .btn-secondary { background: var(--surface2); color: var(--text); border: 1px solid var(--border); }
     .btn-secondary:hover { border-color: var(--accent); color: var(--accent); }
-
-    .btn-danger {
-      background: rgba(255,77,109,0.1);
-      color: var(--red);
-      border: 1px solid rgba(255,77,109,0.3);
-    }
+    .btn-danger { background: rgba(255,77,109,0.1); color: var(--red); border: 1px solid rgba(255,77,109,0.3); }
     .btn-danger:hover { background: rgba(255,77,109,0.2); }
-
     .btn:disabled { opacity: 0.4; cursor: not-allowed; transform: none !important; }
-
-    .meta-row {
-      display: flex;
-      gap: 20px;
-      margin-top: 14px;
-      flex-wrap: wrap;
-    }
-
-    .meta-item {
-      font-family: var(--font-mono);
-      font-size: 11px;
-      color: var(--muted);
-    }
-
+    .meta-row { display: flex; gap: 20px; margin-top: 14px; flex-wrap: wrap; }
+    .meta-item { font-family: var(--font-mono); font-size: 11px; color: var(--muted); }
     .meta-item span { color: var(--text); }
-
-    .refresh-bar {
-      height: 3px;
-      background: var(--border);
-      border-radius: 2px;
-      overflow: hidden;
-      margin-top: 14px;
-    }
-
-    .refresh-progress {
-      height: 100%;
-      background: linear-gradient(90deg, var(--accent), var(--accent2));
-      border-radius: 2px;
-      transition: width 1s linear;
-    }
-
-    .refresh-label {
-      font-family: var(--font-mono);
-      font-size: 10px;
-      color: var(--muted);
-      margin-top: 6px;
-      display: flex;
-      justify-content: space-between;
-    }
-
-    .inbox-empty {
-      text-align: center;
-      padding: 60px 20px;
-      color: var(--muted);
-    }
-
+    .refresh-bar { height: 3px; background: var(--border); border-radius: 2px; overflow: hidden; margin-top: 14px; }
+    .refresh-progress { height: 100%; background: linear-gradient(90deg, var(--accent), var(--accent2)); border-radius: 2px; transition: width 1s linear; }
+    .refresh-label { font-family: var(--font-mono); font-size: 10px; color: var(--muted); margin-top: 6px; display: flex; justify-content: space-between; }
+    .inbox-empty { text-align: center; padding: 60px 20px; color: var(--muted); }
     .inbox-empty .icon { font-size: 42px; margin-bottom: 12px; opacity: 0.4; }
     .inbox-empty p { font-family: var(--font-mono); font-size: 12px; letter-spacing: 1px; }
-
-    .mail-item {
-      background: var(--bg);
-      border: 1px solid var(--border);
-      border-radius: 12px;
-      padding: 16px 18px;
-      margin-bottom: 12px;
-      cursor: pointer;
-      transition: all 0.2s;
-      position: relative;
-    }
-
+    .mail-item { background: var(--bg); border: 1px solid var(--border); border-radius: 12px; padding: 16px 18px; margin-bottom: 12px; cursor: pointer; transition: all 0.2s; position: relative; }
     .mail-item:hover { border-color: rgba(0,229,255,0.4); background: rgba(0,229,255,0.03); }
-    .mail-item.unread::before {
-      content: '';
-      position: absolute;
-      left: -1px; top: 50%; transform: translateY(-50%);
-      width: 3px; height: 60%;
-      background: var(--accent);
-      border-radius: 0 3px 3px 0;
-    }
-
-    .mail-from {
-      font-weight: 700;
-      font-size: 14px;
-      margin-bottom: 4px;
-    }
-
-    .mail-subject {
-      font-size: 13px;
-      color: var(--muted);
-      margin-bottom: 4px;
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
-    }
-
-    .mail-time {
-      font-family: var(--font-mono);
-      font-size: 10px;
-      color: var(--muted);
-      letter-spacing: 0.5px;
-    }
-
-    .modal-overlay {
-      position: fixed; inset: 0;
-      background: rgba(0,0,0,0.85);
-      backdrop-filter: blur(8px);
-      z-index: 100;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      padding: 20px;
-      animation: fadeIn 0.2s ease;
-    }
-
+    .mail-item.unread::before { content: ''; position: absolute; left: -1px; top: 50%; transform: translateY(-50%); width: 3px; height: 60%; background: var(--accent); border-radius: 0 3px 3px 0; }
+    .mail-from { font-weight: 700; font-size: 14px; margin-bottom: 4px; }
+    .mail-subject { font-size: 13px; color: var(--muted); margin-bottom: 4px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .mail-time { font-family: var(--font-mono); font-size: 10px; color: var(--muted); }
+    .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.85); backdrop-filter: blur(8px); z-index: 100; display: flex; align-items: center; justify-content: center; padding: 20px; animation: fadeIn 0.2s ease; }
     .modal-overlay.hidden { display: none; }
-
     @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
     @keyframes slideUp { from { transform: translateY(30px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
-
-    .modal {
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: 20px;
-      width: 100%;
-      max-width: 640px;
-      max-height: 80vh;
-      overflow-y: auto;
-      animation: slideUp 0.25s ease;
-    }
-
-    .modal-header {
-      padding: 20px 24px;
-      border-bottom: 1px solid var(--border);
-      display: flex;
-      align-items: flex-start;
-      justify-content: space-between;
-      gap: 12px;
-      position: sticky;
-      top: 0;
-      background: var(--surface);
-      border-radius: 20px 20px 0 0;
-    }
-
+    .modal { background: var(--surface); border: 1px solid var(--border); border-radius: 20px; width: 100%; max-width: 640px; max-height: 80vh; overflow-y: auto; animation: slideUp 0.25s ease; }
+    .modal-header { padding: 20px 24px; border-bottom: 1px solid var(--border); display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; position: sticky; top: 0; background: var(--surface); border-radius: 20px 20px 0 0; z-index: 1; }
     .modal-subject { font-size: 17px; font-weight: 600; line-height: 1.4; }
     .modal-from { font-family: var(--font-mono); font-size: 11px; color: var(--muted); margin-top: 4px; }
-
-    .btn-close {
-      width: 32px; height: 32px;
-      border-radius: 8px;
-      border: 1px solid var(--border);
-      background: var(--surface2);
-      color: var(--text);
-      cursor: pointer;
-      font-size: 16px;
-      display: grid; place-items: center;
-      flex-shrink: 0;
-      transition: all 0.15s;
-    }
+    .btn-close { width: 32px; height: 32px; border-radius: 8px; border: 1px solid var(--border); background: var(--surface2); color: var(--text); cursor: pointer; font-size: 16px; display: grid; place-items: center; flex-shrink: 0; transition: all 0.15s; }
     .btn-close:hover { border-color: var(--red); color: var(--red); }
-
     .modal-body { padding: 24px; }
-
-    .mail-content {
-      font-size: 14px;
-      line-height: 1.8;
-      color: var(--text);
-      white-space: pre-wrap;
-      word-break: break-word;
-    }
-
-    .mail-content-html {
-      border: 1px solid var(--border);
-      border-radius: 10px;
-      overflow: hidden;
-      background: #fff;
-    }
-
-    .mail-content-html iframe {
-      width: 100%;
-      border: none;
-      display: block;
-      min-height: 300px;
-    }
-
-    .toast {
-      position: fixed;
-      bottom: 30px; left: 50%;
-      transform: translateX(-50%) translateY(20px);
-      background: var(--surface2);
-      border: 1px solid var(--accent);
-      color: var(--accent);
-      font-family: var(--font-mono);
-      font-size: 12px;
-      letter-spacing: 1px;
-      padding: 12px 22px;
-      border-radius: 30px;
-      opacity: 0;
-      transition: all 0.3s;
-      pointer-events: none;
-      z-index: 200;
-      white-space: nowrap;
-    }
-
-    .toast.show {
-      opacity: 1;
-      transform: translateX(-50%) translateY(0);
-    }
-
-    .spinner {
-      display: inline-block;
-      width: 14px; height: 14px;
-      border: 2px solid rgba(0,229,255,0.3);
-      border-top-color: var(--accent);
-      border-radius: 50%;
-      animation: spin 0.7s linear infinite;
-    }
-
+    .mail-content { font-size: 14px; line-height: 1.8; color: var(--text); white-space: pre-wrap; word-break: break-word; }
+    .mail-content-html { border: 1px solid var(--border); border-radius: 10px; overflow: hidden; background: #fff; }
+    .mail-content-html iframe { width: 100%; border: none; display: block; min-height: 300px; }
+    .toast { position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%) translateY(20px); background: var(--surface2); border: 1px solid var(--accent); color: var(--accent); font-family: var(--font-mono); font-size: 12px; letter-spacing: 1px; padding: 12px 22px; border-radius: 30px; opacity: 0; transition: all 0.3s; pointer-events: none; z-index: 200; white-space: nowrap; }
+    .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+    .spinner { display: inline-block; width: 14px; height: 14px; border: 2px solid rgba(0,229,255,0.3); border-top-color: var(--accent); border-radius: 50%; animation: spin 0.7s linear infinite; }
     @keyframes spin { to { transform: rotate(360deg); } }
-
-    .actions-row {
-      display: flex;
-      gap: 10px;
-      margin-top: 16px;
-      flex-wrap: wrap;
-    }
-
-    .dot {
-      width: 8px; height: 8px;
-      border-radius: 50%;
-      flex-shrink: 0;
-    }
+    .actions-row { display: flex; gap: 10px; margin-top: 16px; flex-wrap: wrap; }
+    .dot { width: 8px; height: 8px; border-radius: 50%; }
     .dot-green { background: var(--green); box-shadow: 0 0 6px var(--green); animation: pulse 2s infinite; }
-    .dot-muted { background: var(--muted); }
-
-    @keyframes pulse {
-      0%, 100% { opacity: 1; }
-      50% { opacity: 0.4; }
-    }
-
-    .no-email-state {
-      text-align: center;
-      padding: 40px 20px;
-    }
-
-    .big-icon {
-      font-size: 56px;
-      margin-bottom: 16px;
-      display: block;
-    }
-
-    .no-email-state h2 {
-      font-size: 22px;
-      font-weight: 800;
-      margin-bottom: 8px;
-    }
-
-    .no-email-state p {
-      color: var(--muted);
-      font-size: 14px;
-      margin-bottom: 24px;
-      max-width: 360px;
-      margin-left: auto;
-      margin-right: auto;
-    }
-
-    .feature-list {
-      display: flex;
-      gap: 12px;
-      justify-content: center;
-      flex-wrap: wrap;
-      margin-bottom: 28px;
-    }
-
-    .feature-tag {
-      background: var(--surface2);
-      border: 1px solid var(--border);
-      border-radius: 20px;
-      padding: 6px 14px;
-      font-family: var(--font-mono);
-      font-size: 11px;
-      color: var(--muted);
-      letter-spacing: 0.5px;
-    }
-
-    @media (max-width: 520px) {
+    @keyframes pulse { 0%,100%{opacity:1}50%{opacity:0.4} }
+    .no-email-state { text-align: center; padding: 40px 20px; }
+    .big-icon { font-size: 56px; margin-bottom: 16px; display: block; }
+    .no-email-state h2 { font-size: 22px; font-weight: 800; margin-bottom: 8px; }
+    .no-email-state p { color: var(--muted); font-size: 14px; margin-bottom: 24px; max-width: 360px; margin-left: auto; margin-right: auto; }
+    .feature-list { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; margin-bottom: 28px; }
+    .feature-tag { background: var(--surface2); border: 1px solid var(--border); border-radius: 20px; padding: 6px 14px; font-family: var(--font-mono); font-size: 11px; color: var(--muted); }
+    /* DEBUG */
+    #debugPanel { display:none; background: var(--surface2); border: 1px solid var(--border); border-radius: 12px; padding: 16px; margin-bottom: 20px; }
+    #debugPanel.show { display: block; }
+    #debugLog { font-family: var(--font-mono); font-size: 10px; color: var(--accent); white-space: pre-wrap; word-break: break-all; max-height: 220px; overflow-y: auto; margin-top: 8px; }
+    @media (max-width:520px) {
       .email-row { flex-direction: column; }
       .email-address { width: 100%; }
       .btn { justify-content: center; }
@@ -490,15 +101,23 @@
   </style>
 </head>
 <body>
-
 <div class="container">
   <header>
     <div class="logo">
-      <div class="logo-icon">📨</div>
+      <div class="logo-icon" id="logoIcon">📨</div>
       <h1>TempMail</h1>
     </div>
     <p class="subtitle">Email Sementara · Aman · Instan</p>
   </header>
+
+  <!-- DEBUG — ketuk logo 5x untuk buka -->
+  <div id="debugPanel">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;">
+      <span style="font-family:var(--font-mono);font-size:11px;color:var(--accent);">🐛 DEBUG</span>
+      <button onclick="document.getElementById('debugLog').textContent=''" style="background:none;border:1px solid var(--border);color:var(--muted);padding:2px 8px;border-radius:6px;cursor:pointer;font-family:var(--font-mono);font-size:10px;">CLEAR</button>
+    </div>
+    <div id="debugLog"></div>
+  </div>
 
   <!-- NO EMAIL STATE -->
   <div id="noEmailState" class="card">
@@ -512,7 +131,7 @@
         <span class="feature-tag">🗑️ Otomatis Hapus</span>
         <span class="feature-tag">🔒 Privasi Terjaga</span>
       </div>
-      <button class="btn btn-primary" onclick="createEmail()" id="createBtn" style="margin: 0 auto;">
+      <button class="btn btn-primary" onclick="createEmail()" id="createBtn" style="margin:0 auto;">
         <span>✉️</span> Buat Email Baru
       </button>
     </div>
@@ -523,37 +142,30 @@
     <div class="card">
       <div class="card-header">
         <span class="card-title">📬 Email Aktif</span>
-        <span id="statusBadge" class="badge badge-green">● AKTIF</span>
+        <span class="badge badge-green">● AKTIF</span>
       </div>
       <div class="card-body">
         <div class="email-row">
-          <div class="email-address" onclick="copyEmail()" id="emailDisplay" title="Klik untuk salin">
+          <div class="email-address" onclick="copyEmail()">
             <span id="emailText">—</span>
             <span class="copy-hint">SALIN</span>
           </div>
           <button class="btn btn-secondary" onclick="copyEmail()">📋 Salin</button>
         </div>
-
         <div class="meta-row">
           <div class="meta-item">⏰ Kadaluarsa: <span id="expireTime">—</span></div>
           <div class="meta-item">📩 Pesan: <span id="mailCount">0</span></div>
         </div>
-
         <div class="refresh-bar">
           <div class="refresh-progress" id="refreshBar" style="width:100%"></div>
         </div>
         <div class="refresh-label">
-          <span id="refreshCountdown">⟳ Refresh otomatis dalam 10 detik</span>
+          <span id="refreshCountdown">⟳ Refresh dalam 10 detik</span>
           <span id="lastRefresh">—</span>
         </div>
-
         <div class="actions-row">
-          <button class="btn btn-secondary" onclick="checkMail()" id="refreshBtn">
-            🔄 Refresh Sekarang
-          </button>
-          <button class="btn btn-danger" onclick="deleteEmail()">
-            🗑️ Hapus Email
-          </button>
+          <button class="btn btn-secondary" onclick="manualRefresh()" id="refreshBtn">🔄 Refresh Sekarang</button>
+          <button class="btn btn-danger" onclick="deleteEmail()">🗑️ Hapus Email</button>
         </div>
       </div>
     </div>
@@ -577,11 +189,11 @@
   </div>
 </div>
 
-<!-- MAIL MODAL -->
+<!-- MODAL -->
 <div class="modal-overlay hidden" id="mailModal">
   <div class="modal">
     <div class="modal-header">
-      <div>
+      <div style="min-width:0;">
         <div class="modal-subject" id="modalSubject">—</div>
         <div class="modal-from" id="modalFrom">—</div>
       </div>
@@ -596,140 +208,81 @@
 <div class="toast" id="toast"></div>
 
 <script>
-  const API_BASE = 'https://bintangapi.full.diskon.cloud/api/tempmail';
+  const API_BASE        = 'https://bintangapi.full.diskon.cloud/api/tempmail';
   const REFRESH_INTERVAL = 10;
 
-  let state = {
-    email: null,
-    emailToken: null,
+  const state = {
+    email:      null,   // alamat email (tampilan)
+    token:      null,   // email_token dari /create/ → dipakai ke /check/?token=
     expireTime: null,
-    mails: [],
-    countdownTimer: null,
-    countdown: REFRESH_INTERVAL,
+    mails:      [],
+    timer:      null,
+    countdown:  REFRESH_INTERVAL,
   };
 
-  // ── TOAST ──────────────────────────────────────────────
-  function showToast(msg, duration = 2500) {
-    const t = document.getElementById('toast');
-    t.textContent = msg;
-    t.classList.add('show');
-    setTimeout(() => t.classList.remove('show'), duration);
+  /* ── DEBUG ── ketuk logo 5x */
+  let _tap = 0;
+  document.getElementById('logoIcon').addEventListener('click', () => {
+    _tap++;
+    setTimeout(() => _tap = 0, 1500);
+    if (_tap >= 5) { _tap = 0; document.getElementById('debugPanel').classList.toggle('show'); }
+  });
+  function dbg(label, data) {
+    const el = document.getElementById('debugLog');
+    const ts = new Date().toLocaleTimeString('id-ID');
+    el.textContent = `[${ts}] ${label}\n${JSON.stringify(data, null, 2)}\n\n` + el.textContent;
   }
 
-  // ── COPY ───────────────────────────────────────────────
+  /* ── TOAST ── */
+  function showToast(msg, ms = 2500) {
+    const t = document.getElementById('toast');
+    t.textContent = msg; t.classList.add('show');
+    setTimeout(() => t.classList.remove('show'), ms);
+  }
+
+  /* ── COPY ── */
   function copyEmail() {
     if (!state.email) return;
-    if (navigator.clipboard && navigator.clipboard.writeText) {
-      navigator.clipboard.writeText(state.email)
-        .then(() => showToast('✅ Email tersalin!'))
-        .catch(() => fallbackCopy(state.email));
-    } else {
-      fallbackCopy(state.email);
-    }
-  }
-
-  function fallbackCopy(text) {
-    const ta = document.createElement('textarea');
-    ta.value = text;
-    ta.style.cssText = 'position:fixed;opacity:0;top:0;left:0;';
-    document.body.appendChild(ta);
-    ta.focus(); ta.select();
-    try { document.execCommand('copy'); showToast('✅ Email tersalin!'); }
-    catch { showToast('❌ Gagal menyalin'); }
-    document.body.removeChild(ta);
-  }
-
-  // ── NORMALIZE API RESPONSE ─────────────────────────────
-  // Handles berbagai format response dari API yang mungkin berubah-ubah
-  function normalizeCreateResponse(json) {
-    // Format: { status: 'success', data: { mailbox, ... } }  ← format baru
-    if (json.status === 'success' && json.data) {
-      const d = json.data;
-      return {
-        email:      d.mailbox || d.email || null,
-        emailToken: d.token   || d.email_token || d.mailbox || d.email || null,
-        expireTime: d.expires_at || d.deleted_in || d.expiredAt || null,
-      };
-    }
-    // Format: { status: true, result: { data: { email, email_token, deleted_in } } }  ← format lama
-    if ((json.status === true || json.status === 1) && json.result?.data) {
-      const d = json.result.data;
-      return {
-        email:      d.email      || null,
-        emailToken: d.email_token || d.token || d.email || null,
-        expireTime: d.deleted_in  || d.expires_at || null,
-      };
-    }
-    // Format: { status: true, result: { email, email_token } }
-    if ((json.status === true || json.status === 1) && json.result) {
-      const d = json.result;
-      return {
-        email:      d.email      || null,
-        emailToken: d.email_token || d.token || d.email || null,
-        expireTime: d.deleted_in  || d.expires_at || null,
-      };
-    }
-    return null;
-  }
-
-  function normalizeMailList(json) {
-    // Format: { status: 'success', data: { mailbox, messages: [...] } }  ← format baru
-    if (json.status === 'success' && json.data?.messages) {
-      return json.data.messages;
-    }
-    // Format: { status: true, result: [...] }
-    if ((json.status === true || json.status === 1) && Array.isArray(json.result)) {
-      return json.result;
-    }
-    // Format: { status: true, result: { data: [...] } }
-    if ((json.status === true || json.status === 1) && Array.isArray(json.result?.data)) {
-      return json.result.data;
-    }
-    // Format: { status: true, result: { messages: [...] } }
-    if ((json.status === true || json.status === 1) && Array.isArray(json.result?.messages)) {
-      return json.result.messages;
-    }
-    return null;
-  }
-
-  // Normalize field per-mail (support berbagai nama field dari API)
-  function normalizeMail(mail) {
-    return {
-      from:    mail.from_email || mail.from_address || mail.from || mail.sender || 'unknown@domain.com',
-      subject: mail.subject    || '(Tanpa Subjek)',
-      time:    mail.receivedAt || mail.received_at  || mail.date || mail.createdAt || '—',
-      html:    mail.content    || mail.html_body    || mail.body_html || mail.html || null,
-      text:    mail.text_body  || mail.body         || mail.text  || mail.message  || '',
-      raw:     mail,
+    const fb = () => {
+      const ta = document.createElement('textarea');
+      ta.value = state.email; ta.style.cssText = 'position:fixed;opacity:0;';
+      document.body.appendChild(ta); ta.select();
+      try { document.execCommand('copy'); } catch {}
+      document.body.removeChild(ta);
     };
+    if (navigator.clipboard?.writeText) {
+      navigator.clipboard.writeText(state.email).then(() => showToast('✅ Email tersalin!')).catch(() => { fb(); showToast('✅ Email tersalin!'); });
+    } else { fb(); showToast('✅ Email tersalin!'); }
   }
 
-  // ── CREATE EMAIL ───────────────────────────────────────
+  /* ── CREATE ── */
   async function createEmail() {
     const btn = document.getElementById('createBtn');
     btn.disabled = true;
     btn.innerHTML = '<span class="spinner"></span> Membuat...';
 
     try {
-      const res = await fetch(`${API_BASE}/create/`, {
-        method: 'GET',
-        headers: { 'Accept': 'application/json' }
-      });
-
-      if (!res.ok) throw new Error(`Server error: HTTP ${res.status}`);
-
+      const res  = await fetch(`${API_BASE}/create/`);
       const json = await res.json();
-      const parsed = normalizeCreateResponse(json);
+      dbg('CREATE response', json);
 
-      if (!parsed || !parsed.email) {
-        console.error('Unexpected create response:', json);
-        throw new Error(json.message || 'Format response tidak dikenali');
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+
+      /*
+        Format yang diketahui:
+        { status: true, result: { data: { email, email_token, deleted_in } } }
+      */
+      const data = json?.result?.data;
+      if (!data?.email || !data?.email_token) {
+        throw new Error(json?.result?.message || 'Format response tidak dikenali');
       }
 
-      state.email      = parsed.email;
-      state.emailToken = parsed.emailToken;
-      state.expireTime = parsed.expireTime;
+      state.email      = data.email;
+      state.token      = data.email_token;   // ← INI yang dikirim ke /check/
+      state.expireTime = data.deleted_in || data.expires_at || null;
       state.mails      = [];
+
+      dbg('CREATE parsed', { email: state.email, token: state.token });
 
       document.getElementById('noEmailState').style.display = 'none';
       document.getElementById('emailState').style.display   = 'block';
@@ -737,75 +290,89 @@
       document.getElementById('expireTime').textContent     = formatDate(state.expireTime);
 
       startAutoRefresh();
-      checkMail();
+      await checkMail();
       showToast('🎉 Email berhasil dibuat!');
 
     } catch (e) {
-      console.error('createEmail error:', e);
-      showToast('❌ Gagal membuat email: ' + e.message);
+      dbg('CREATE error', { message: e.message });
+      showToast('❌ ' + e.message);
       btn.disabled = false;
       btn.innerHTML = '<span>✉️</span> Buat Email Baru';
     }
   }
 
-  // ── CHECK MAIL ─────────────────────────────────────────
-  async function checkMail() {
-    if (!state.emailToken) return;
+  /* ── CHECK MAIL ── */
+  async function checkMail(spin = false) {
+    if (!state.token) return;
 
-    const btn = document.getElementById('refreshBtn');
-    if (btn) { btn.disabled = true; btn.innerHTML = '<span class="spinner"></span> Mengecek...'; }
+    if (spin) {
+      const b = document.getElementById('refreshBtn');
+      if (b) { b.disabled = true; b.innerHTML = '<span class="spinner"></span> Mengecek...'; }
+    }
 
     try {
-      // Kirim token dengan semua nama param yang mungkin dipakai API
-      const params = new URLSearchParams({
-        token:       state.emailToken,
-        email_token: state.emailToken,
-        mailbox:     state.email || '',
-        email:       state.email || '',
-      });
+      /*
+        Kirim token sebagai ?token=  (nama param yang paling umum di API ini)
+        Sekaligus kirim alternatif lain biar jaga-jaga
+      */
+      const params = new URLSearchParams({ token: state.token });
+      const url    = `${API_BASE}/check/?${params}`;
+      dbg('CHECK request', { url, token: state.token });
 
-      const res = await fetch(`${API_BASE}/check/?${params}`, {
-        method: 'GET',
-        headers: { 'Accept': 'application/json' }
-      });
+      const res  = await fetch(url);
+      const json = await res.json();
+      dbg('CHECK response', json);
 
       if (!res.ok) throw new Error(`HTTP ${res.status}`);
 
-      const json = await res.json();
-      const mails = normalizeMailList(json);
+      /*
+        Kemungkinan format response check:
+        A: { status: true, result: { data: { mailbox, messages: [...] } } }
+        B: { status: true, result: { data: [...] } }
+        C: { status: true, result: [...] }
+        D: { status: "success", data: { messages: [...] } }
+      */
+      let messages = null;
 
-      if (mails !== null) {
-        state.mails = mails;
+      if (Array.isArray(json?.result?.data?.messages)) {
+        messages = json.result.data.messages;                  // A
+      } else if (Array.isArray(json?.result?.data)) {
+        messages = json.result.data;                           // B
+      } else if (Array.isArray(json?.result)) {
+        messages = json.result;                                // C
+      } else if (Array.isArray(json?.data?.messages)) {
+        messages = json.data.messages;                         // D
+      } else if (json?.result?.status === 'error') {
+        throw new Error(json.result.message);                  // token invalid dll
+      }
+
+      if (messages !== null) {
+        state.mails = messages;
         renderInbox();
-      } else {
-        // Response tidak dikenali tapi tidak error — mungkin inbox kosong
-        console.warn('Unrecognized check response (treating as empty):', json);
       }
 
     } catch (e) {
-      console.warn('checkMail error:', e.message);
-      // Tidak tampilkan error ke user supaya tidak mengganggu UX auto-refresh
+      dbg('CHECK error', { message: e.message });
+      // hanya tampilkan ke user kalau manual refresh
+      if (spin) showToast('⚠️ ' + e.message);
     } finally {
-      if (btn) {
-        btn.disabled = false;
-        btn.innerHTML = '🔄 Refresh Sekarang';
+      if (spin) {
+        const b = document.getElementById('refreshBtn');
+        if (b) { b.disabled = false; b.innerHTML = '🔄 Refresh Sekarang'; }
       }
       updateLastRefresh();
     }
   }
 
-  // ── RENDER INBOX ───────────────────────────────────────
+  /* ── RENDER INBOX ── */
   function renderInbox() {
-    const body    = document.getElementById('inboxBody');
-    const badge   = document.getElementById('inboxBadge');
-    const liveDot = document.getElementById('liveDot');
-    const countEl = document.getElementById('mailCount');
-    const count   = state.mails.length;
+    const body  = document.getElementById('inboxBody');
+    const count = state.mails.length;
 
-    countEl.textContent  = count;
-    badge.textContent    = `${count} PESAN`;
-    badge.className      = count > 0 ? 'badge badge-green' : 'badge badge-muted';
-    liveDot.style.display = count > 0 ? 'block' : 'none';
+    document.getElementById('mailCount').textContent  = count;
+    document.getElementById('inboxBadge').textContent = `${count} PESAN`;
+    document.getElementById('inboxBadge').className   = count > 0 ? 'badge badge-green' : 'badge badge-muted';
+    document.getElementById('liveDot').style.display  = count > 0 ? 'block' : 'none';
 
     if (count === 0) {
       body.innerHTML = `
@@ -817,61 +384,54 @@
       return;
     }
 
-    body.innerHTML = state.mails.map((raw, i) => {
-      const mail = normalizeMail(raw);
+    body.innerHTML = state.mails.map((m, i) => {
+      const from    = m.from_email || m.from_address || m.sender || m.from || 'unknown@domain.com';
+      const subject = m.subject || '(Tanpa Subjek)';
+      const time    = m.receivedAt || m.received_at || m.date || m.createdAt || '—';
       return `
         <div class="mail-item unread" onclick="openMail(${i})">
-          <div class="mail-from">${escHtml(mail.from)}</div>
-          <div class="mail-subject">${escHtml(mail.subject)}</div>
-          <div class="mail-time">${escHtml(mail.time)}</div>
+          <div class="mail-from">${esc(from)}</div>
+          <div class="mail-subject">${esc(subject)}</div>
+          <div class="mail-time">${esc(time)}</div>
         </div>`;
     }).join('');
   }
 
-  // ── OPEN MAIL ──────────────────────────────────────────
-  function openMail(index) {
-    const raw = state.mails[index];
-    if (!raw) return;
+  /* ── OPEN MAIL ── */
+  function openMail(i) {
+    const m = state.mails[i];
+    if (!m) return;
 
-    const mail = normalizeMail(raw);
+    const from    = m.from_email || m.from_address || m.sender || m.from || '—';
+    const subject = m.subject || '(Tanpa Subjek)';
+    const time    = m.receivedAt || m.received_at || m.date || '—';
+    // field "content" = HTML body di API ini (terbukti dari screenshot sebelumnya)
+    const html    = m.content || m.html_body || m.body_html || m.html || null;
+    const text    = m.text_body || m.body || m.text || m.message || '';
 
-    document.getElementById('modalSubject').textContent =
-      mail.subject;
-    document.getElementById('modalFrom').textContent =
-      `Dari: ${mail.from}  ·  ${mail.time}`;
+    document.getElementById('modalSubject').textContent = subject;
+    document.getElementById('modalFrom').textContent    = `Dari: ${from}  ·  ${time}`;
 
-    const contentEl = document.getElementById('modalContent');
-
-    if (mail.html) {
-      contentEl.className = 'mail-content-html';
-      contentEl.innerHTML = '';
-
+    const el = document.getElementById('modalContent');
+    if (html) {
+      el.className = 'mail-content-html';
+      el.innerHTML = '';
       const iframe = document.createElement('iframe');
       iframe.setAttribute('sandbox', 'allow-same-origin');
-      iframe.setAttribute('scrolling', 'no');
-      contentEl.appendChild(iframe);
-
-      // Tulis konten ke iframe setelah dimasukkan ke DOM
+      el.appendChild(iframe);
       requestAnimationFrame(() => {
         const doc = iframe.contentDocument || iframe.contentWindow.document;
-        doc.open();
-        doc.write(mail.html);
-        doc.close();
-
-        // Auto-resize iframe sesuai konten
+        doc.open(); doc.write(html); doc.close();
         const resize = () => {
-          try {
-            const h = doc.body ? doc.body.scrollHeight : 300;
-            iframe.style.height = Math.max(h, 300) + 'px';
-          } catch (e) { iframe.style.height = '400px'; }
+          try { iframe.style.height = Math.max(doc.documentElement.scrollHeight, 300) + 'px'; }
+          catch { iframe.style.height = '400px'; }
         };
         iframe.onload = resize;
-        setTimeout(resize, 300);
+        setTimeout(resize, 350);
       });
-
     } else {
-      contentEl.className = 'mail-content';
-      contentEl.textContent = mail.text || JSON.stringify(raw, null, 2);
+      el.className  = 'mail-content';
+      el.textContent = text || JSON.stringify(m, null, 2);
     }
 
     document.getElementById('mailModal').classList.remove('hidden');
@@ -881,98 +441,65 @@
   function closeModal() {
     document.getElementById('mailModal').classList.add('hidden');
     document.body.style.overflow = '';
-    // Kosongkan iframe biar tidak memory leak
-    const iframe = document.querySelector('#modalContent iframe');
-    if (iframe) iframe.src = 'about:blank';
+    const f = document.querySelector('#modalContent iframe');
+    if (f) try { f.contentDocument?.open(); f.contentDocument?.close(); } catch {}
   }
 
-  document.getElementById('mailModal').addEventListener('click', function(e) {
-    if (e.target === this) closeModal();
-  });
+  document.getElementById('mailModal').addEventListener('click', e => { if (e.target === e.currentTarget) closeModal(); });
+  document.addEventListener('keydown', e => { if (e.key === 'Escape') closeModal(); });
 
-  // Keyboard ESC untuk tutup modal
-  document.addEventListener('keydown', function(e) {
-    if (e.key === 'Escape') closeModal();
-  });
-
-  // ── AUTO REFRESH ───────────────────────────────────────
-  function startAutoRefresh() {
-    stopAutoRefresh();
+  /* ── AUTO REFRESH ── */
+  function manualRefresh() {
     state.countdown = REFRESH_INTERVAL;
+    checkMail(true);
+  }
 
-    state.countdownTimer = setInterval(() => {
+  function startAutoRefresh() {
+    clearInterval(state.timer);
+    state.countdown = REFRESH_INTERVAL;
+    state.timer = setInterval(() => {
       state.countdown--;
-      updateCountdownUI();
+      const pct = (state.countdown / REFRESH_INTERVAL) * 100;
+      const bar = document.getElementById('refreshBar');
+      const lbl = document.getElementById('refreshCountdown');
+      if (bar) bar.style.width = pct + '%';
+      if (lbl) lbl.textContent = `⟳ Refresh dalam ${state.countdown} detik`;
       if (state.countdown <= 0) {
         state.countdown = REFRESH_INTERVAL;
-        checkMail();
+        checkMail(false);
       }
     }, 1000);
   }
 
-  function stopAutoRefresh() {
-    clearInterval(state.countdownTimer);
-    state.countdownTimer = null;
-  }
-
-  function updateCountdownUI() {
-    const pct = (state.countdown / REFRESH_INTERVAL) * 100;
-    const bar = document.getElementById('refreshBar');
-    const lbl = document.getElementById('refreshCountdown');
-    if (bar) bar.style.width = pct + '%';
-    if (lbl) lbl.textContent = `⟳ Refresh otomatis dalam ${state.countdown} detik`;
-  }
-
   function updateLastRefresh() {
-    const now = new Date();
-    const el  = document.getElementById('lastRefresh');
-    if (el) el.textContent =
-      `Terakhir: ${pad(now.getHours())}:${pad(now.getMinutes())}:${pad(now.getSeconds())}`;
+    const n = new Date();
+    const el = document.getElementById('lastRefresh');
+    if (el) el.textContent = `Terakhir: ${p(n.getHours())}:${p(n.getMinutes())}:${p(n.getSeconds())}`;
   }
 
-  // ── DELETE EMAIL ───────────────────────────────────────
+  /* ── DELETE ── */
   function deleteEmail() {
-    if (!confirm('Yakin hapus email ini? Semua pesan akan hilang.')) return;
-
-    stopAutoRefresh();
-    state.email      = null;
-    state.emailToken = null;
-    state.expireTime = null;
-    state.mails      = [];
-    state.countdown  = REFRESH_INTERVAL;
-
+    if (!confirm('Yakin hapus email ini?')) return;
+    clearInterval(state.timer);
+    state.email = null; state.token = null; state.expireTime = null;
+    state.mails = []; state.countdown = REFRESH_INTERVAL;
     document.getElementById('emailState').style.display   = 'none';
     document.getElementById('noEmailState').style.display = 'block';
-
     const btn = document.getElementById('createBtn');
-    btn.disabled = false;
-    btn.innerHTML = '<span>✉️</span> Buat Email Baru';
-
+    btn.disabled = false; btn.innerHTML = '<span>✉️</span> Buat Email Baru';
     showToast('🗑️ Email dihapus');
   }
 
-  // ── HELPERS ────────────────────────────────────────────
-  function formatDate(str) {
-    if (!str) return '—';
-    try {
-      const d = new Date(str);
-      if (isNaN(d.getTime())) return str;
-      return d.toLocaleString('id-ID', {
-        day: '2-digit', month: 'short', year: 'numeric',
-        hour: '2-digit', minute: '2-digit'
-      });
-    } catch { return str; }
+  /* ── HELPERS ── */
+  function formatDate(s) {
+    if (!s) return '—';
+    try { const d = new Date(s); return isNaN(d) ? s : d.toLocaleString('id-ID', { day:'2-digit', month:'short', year:'numeric', hour:'2-digit', minute:'2-digit' }); }
+    catch { return s; }
   }
-
-  function escHtml(s) {
-    return String(s || '')
-      .replace(/&/g, '&amp;')
-      .replace(/</g, '&lt;')
-      .replace(/>/g, '&gt;')
-      .replace(/"/g, '&quot;');
+  function esc(s) {
+    return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
   }
-
-  function pad(n) { return String(n).padStart(2, '0'); }
+  function p(n) { return String(n).padStart(2,'0'); }
 </script>
 </body>
 </html>
