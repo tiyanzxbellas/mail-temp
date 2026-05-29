@@ -31,7 +31,6 @@
       overflow-x: hidden;
     }
 
-    /* Grid background */
     body::before {
       content: '';
       position: fixed;
@@ -52,7 +51,6 @@
       z-index: 1;
     }
 
-    /* HEADER */
     header {
       text-align: center;
       margin-bottom: 48px;
@@ -94,7 +92,6 @@
       margin-top: 6px;
     }
 
-    /* CARD */
     .card {
       background: var(--surface);
       border: 1px solid var(--border);
@@ -137,7 +134,6 @@
 
     .card-body { padding: 20px; }
 
-    /* EMAIL DISPLAY */
     .email-row {
       display: flex;
       align-items: center;
@@ -212,7 +208,6 @@
 
     .btn:disabled { opacity: 0.4; cursor: not-allowed; transform: none !important; }
 
-    /* META INFO */
     .meta-row {
       display: flex;
       gap: 20px;
@@ -228,7 +223,6 @@
 
     .meta-item span { color: var(--text); }
 
-    /* AUTO REFRESH BAR */
     .refresh-bar {
       height: 3px;
       background: var(--border);
@@ -253,7 +247,6 @@
       justify-content: space-between;
     }
 
-    /* INBOX */
     .inbox-empty {
       text-align: center;
       padding: 60px 20px;
@@ -288,9 +281,6 @@
       font-weight: 700;
       font-size: 14px;
       margin-bottom: 4px;
-      display: flex;
-      align-items: center;
-      gap: 8px;
     }
 
     .mail-subject {
@@ -309,7 +299,6 @@
       letter-spacing: 0.5px;
     }
 
-    /* MODAL */
     .modal-overlay {
       position: fixed; inset: 0;
       background: rgba(0,0,0,0.85);
@@ -381,18 +370,17 @@
     .mail-content-html {
       border: 1px solid var(--border);
       border-radius: 10px;
-      padding: 16px;
+      overflow: hidden;
       background: #fff;
-      color: #111;
     }
 
     .mail-content-html iframe {
       width: 100%;
       border: none;
+      display: block;
       min-height: 300px;
     }
 
-    /* TOAST */
     .toast {
       position: fixed;
       bottom: 30px; left: 50%;
@@ -417,7 +405,6 @@
       transform: translateX(-50%) translateY(0);
     }
 
-    /* LOADING SPINNER */
     .spinner {
       display: inline-block;
       width: 14px; height: 14px;
@@ -429,7 +416,6 @@
 
     @keyframes spin { to { transform: rotate(360deg); } }
 
-    /* ACTIONS ROW */
     .actions-row {
       display: flex;
       gap: 10px;
@@ -437,7 +423,6 @@
       flex-wrap: wrap;
     }
 
-    /* STATUS DOT */
     .dot {
       width: 8px; height: 8px;
       border-radius: 50%;
@@ -451,7 +436,6 @@
       50% { opacity: 0.4; }
     }
 
-    /* INTRO */
     .no-email-state {
       text-align: center;
       padding: 40px 20px;
@@ -508,7 +492,6 @@
 <body>
 
 <div class="container">
-  <!-- HEADER -->
   <header>
     <div class="logo">
       <div class="logo-icon">📨</div>
@@ -537,7 +520,6 @@
 
   <!-- EMAIL ACTIVE STATE -->
   <div id="emailState" style="display:none;">
-    <!-- Email Info Card -->
     <div class="card">
       <div class="card-header">
         <span class="card-title">📬 Email Aktif</span>
@@ -557,8 +539,7 @@
           <div class="meta-item">📩 Pesan: <span id="mailCount">0</span></div>
         </div>
 
-        <!-- Refresh progress -->
-        <div class="refresh-bar" id="refreshBarWrap">
+        <div class="refresh-bar">
           <div class="refresh-progress" id="refreshBar" style="width:100%"></div>
         </div>
         <div class="refresh-label">
@@ -577,7 +558,6 @@
       </div>
     </div>
 
-    <!-- Inbox -->
     <div class="card">
       <div class="card-header">
         <span class="card-title">📥 Kotak Masuk</span>
@@ -613,21 +593,19 @@
   </div>
 </div>
 
-<!-- TOAST -->
 <div class="toast" id="toast"></div>
 
 <script>
   const API_BASE = 'https://bintangapi.full.diskon.cloud/api/tempmail';
-  const REFRESH_INTERVAL = 10; // detik
+  const REFRESH_INTERVAL = 10;
 
   let state = {
     email: null,
     emailToken: null,
     expireTime: null,
     mails: [],
-    refreshTimer: null,
-    countdown: REFRESH_INTERVAL,
     countdownTimer: null,
+    countdown: REFRESH_INTERVAL,
   };
 
   // ── TOAST ──────────────────────────────────────────────
@@ -641,18 +619,89 @@
   // ── COPY ───────────────────────────────────────────────
   function copyEmail() {
     if (!state.email) return;
-    navigator.clipboard.writeText(state.email)
-      .then(() => showToast('✅ Email tersalin!'))
-      .catch(() => {
-        // fallback
-        const ta = document.createElement('textarea');
-        ta.value = state.email;
-        document.body.appendChild(ta);
-        ta.select();
-        document.execCommand('copy');
-        document.body.removeChild(ta);
-        showToast('✅ Email tersalin!');
-      });
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(state.email)
+        .then(() => showToast('✅ Email tersalin!'))
+        .catch(() => fallbackCopy(state.email));
+    } else {
+      fallbackCopy(state.email);
+    }
+  }
+
+  function fallbackCopy(text) {
+    const ta = document.createElement('textarea');
+    ta.value = text;
+    ta.style.cssText = 'position:fixed;opacity:0;top:0;left:0;';
+    document.body.appendChild(ta);
+    ta.focus(); ta.select();
+    try { document.execCommand('copy'); showToast('✅ Email tersalin!'); }
+    catch { showToast('❌ Gagal menyalin'); }
+    document.body.removeChild(ta);
+  }
+
+  // ── NORMALIZE API RESPONSE ─────────────────────────────
+  // Handles berbagai format response dari API yang mungkin berubah-ubah
+  function normalizeCreateResponse(json) {
+    // Format: { status: 'success', data: { mailbox, ... } }  ← format baru
+    if (json.status === 'success' && json.data) {
+      const d = json.data;
+      return {
+        email:      d.mailbox || d.email || null,
+        emailToken: d.token   || d.email_token || d.mailbox || d.email || null,
+        expireTime: d.expires_at || d.deleted_in || d.expiredAt || null,
+      };
+    }
+    // Format: { status: true, result: { data: { email, email_token, deleted_in } } }  ← format lama
+    if ((json.status === true || json.status === 1) && json.result?.data) {
+      const d = json.result.data;
+      return {
+        email:      d.email      || null,
+        emailToken: d.email_token || d.token || d.email || null,
+        expireTime: d.deleted_in  || d.expires_at || null,
+      };
+    }
+    // Format: { status: true, result: { email, email_token } }
+    if ((json.status === true || json.status === 1) && json.result) {
+      const d = json.result;
+      return {
+        email:      d.email      || null,
+        emailToken: d.email_token || d.token || d.email || null,
+        expireTime: d.deleted_in  || d.expires_at || null,
+      };
+    }
+    return null;
+  }
+
+  function normalizeMailList(json) {
+    // Format: { status: 'success', data: { mailbox, messages: [...] } }  ← format baru
+    if (json.status === 'success' && json.data?.messages) {
+      return json.data.messages;
+    }
+    // Format: { status: true, result: [...] }
+    if ((json.status === true || json.status === 1) && Array.isArray(json.result)) {
+      return json.result;
+    }
+    // Format: { status: true, result: { data: [...] } }
+    if ((json.status === true || json.status === 1) && Array.isArray(json.result?.data)) {
+      return json.result.data;
+    }
+    // Format: { status: true, result: { messages: [...] } }
+    if ((json.status === true || json.status === 1) && Array.isArray(json.result?.messages)) {
+      return json.result.messages;
+    }
+    return null;
+  }
+
+  // Normalize field per-mail (support berbagai nama field dari API)
+  function normalizeMail(mail) {
+    return {
+      from:    mail.from_email || mail.from_address || mail.from || mail.sender || 'unknown@domain.com',
+      subject: mail.subject    || '(Tanpa Subjek)',
+      time:    mail.receivedAt || mail.received_at  || mail.date || mail.createdAt || '—',
+      html:    mail.content    || mail.html_body    || mail.body_html || mail.html || null,
+      text:    mail.text_body  || mail.body         || mail.text  || mail.message  || '',
+      raw:     mail,
+    };
   }
 
   // ── CREATE EMAIL ───────────────────────────────────────
@@ -667,31 +716,33 @@
         headers: { 'Accept': 'application/json' }
       });
 
-      if (!res.ok) throw new Error(`HTTP ${res.status}`);
-      const json = await res.json();
+      if (!res.ok) throw new Error(`Server error: HTTP ${res.status}`);
 
-      if (!json.status || !json.result?.data) {
-        throw new Error(json.message || 'Gagal membuat email');
+      const json = await res.json();
+      const parsed = normalizeCreateResponse(json);
+
+      if (!parsed || !parsed.email) {
+        console.error('Unexpected create response:', json);
+        throw new Error(json.message || 'Format response tidak dikenali');
       }
 
-      const data = json.result.data;
-      state.email      = data.email;
-      state.emailToken = data.email_token;
-      state.expireTime = data.deleted_in;
+      state.email      = parsed.email;
+      state.emailToken = parsed.emailToken;
+      state.expireTime = parsed.expireTime;
       state.mails      = [];
 
-      // Update UI
-      document.getElementById('noEmailState').style.display  = 'none';
-      document.getElementById('emailState').style.display    = 'block';
-      document.getElementById('emailText').textContent       = state.email;
-      document.getElementById('expireTime').textContent      = formatDate(state.expireTime);
+      document.getElementById('noEmailState').style.display = 'none';
+      document.getElementById('emailState').style.display   = 'block';
+      document.getElementById('emailText').textContent      = state.email;
+      document.getElementById('expireTime').textContent     = formatDate(state.expireTime);
 
       startAutoRefresh();
       checkMail();
       showToast('🎉 Email berhasil dibuat!');
 
-    } catch(e) {
-      showToast('❌ Error: ' + e.message);
+    } catch (e) {
+      console.error('createEmail error:', e);
+      showToast('❌ Gagal membuat email: ' + e.message);
       btn.disabled = false;
       btn.innerHTML = '<span>✉️</span> Buat Email Baru';
     }
@@ -702,76 +753,58 @@
     if (!state.emailToken) return;
 
     const btn = document.getElementById('refreshBtn');
-    btn.disabled = true;
-    btn.innerHTML = '<span class="spinner"></span> Mengecek...';
+    if (btn) { btn.disabled = true; btn.innerHTML = '<span class="spinner"></span> Mengecek...'; }
 
     try {
-      // Coba berbagai param yang mungkin digunakan API
-      const params = new URLSearchParams({ token: state.emailToken });
+      // Kirim token dengan semua nama param yang mungkin dipakai API
+      const params = new URLSearchParams({
+        token:       state.emailToken,
+        email_token: state.emailToken,
+        mailbox:     state.email || '',
+        email:       state.email || '',
+      });
+
       const res = await fetch(`${API_BASE}/check/?${params}`, {
         method: 'GET',
         headers: { 'Accept': 'application/json' }
       });
 
       if (!res.ok) throw new Error(`HTTP ${res.status}`);
+
       const json = await res.json();
+      const mails = normalizeMailList(json);
 
-      // Handle respons
-      if (json.status && json.result) {
-        const emails = Array.isArray(json.result)
-          ? json.result
-          : (Array.isArray(json.result.data) ? json.result.data : [json.result]);
-
-        state.mails = emails;
+      if (mails !== null) {
+        state.mails = mails;
         renderInbox();
-      } else if (json.status === false) {
-        // API mungkin pakai param berbeda, coba email_token
-        await checkMailAlt();
+      } else {
+        // Response tidak dikenali tapi tidak error — mungkin inbox kosong
+        console.warn('Unrecognized check response (treating as empty):', json);
       }
 
-    } catch(e) {
-      // silent fail — tetap update UI
-      console.warn('Check mail error:', e.message);
+    } catch (e) {
+      console.warn('checkMail error:', e.message);
+      // Tidak tampilkan error ke user supaya tidak mengganggu UX auto-refresh
     } finally {
-      btn.disabled = false;
-      btn.innerHTML = '🔄 Refresh Sekarang';
-      updateLastRefresh();
-    }
-  }
-
-  async function checkMailAlt() {
-    try {
-      const params = new URLSearchParams({ email_token: state.emailToken });
-      const res = await fetch(`${API_BASE}/check/?${params}`, {
-        method: 'GET',
-        headers: { 'Accept': 'application/json' }
-      });
-      if (!res.ok) return;
-      const json = await res.json();
-
-      if (json.status && json.result) {
-        const emails = Array.isArray(json.result)
-          ? json.result
-          : (Array.isArray(json.result.data) ? json.result.data : [json.result]);
-        state.mails = emails;
-        renderInbox();
+      if (btn) {
+        btn.disabled = false;
+        btn.innerHTML = '🔄 Refresh Sekarang';
       }
-    } catch(e) {
-      console.warn('Alt check error:', e.message);
+      updateLastRefresh();
     }
   }
 
   // ── RENDER INBOX ───────────────────────────────────────
   function renderInbox() {
-    const body     = document.getElementById('inboxBody');
-    const badge    = document.getElementById('inboxBadge');
-    const liveDot  = document.getElementById('liveDot');
-    const countEl  = document.getElementById('mailCount');
-    const count    = state.mails.length;
+    const body    = document.getElementById('inboxBody');
+    const badge   = document.getElementById('inboxBadge');
+    const liveDot = document.getElementById('liveDot');
+    const countEl = document.getElementById('mailCount');
+    const count   = state.mails.length;
 
-    countEl.textContent = count;
-    badge.textContent   = `${count} PESAN`;
-    badge.className     = count > 0 ? 'badge badge-green' : 'badge badge-muted';
+    countEl.textContent  = count;
+    badge.textContent    = `${count} PESAN`;
+    badge.className      = count > 0 ? 'badge badge-green' : 'badge badge-muted';
     liveDot.style.display = count > 0 ? 'block' : 'none';
 
     if (count === 0) {
@@ -784,41 +817,61 @@
       return;
     }
 
-    body.innerHTML = state.mails.map((mail, i) => `
-      <div class="mail-item unread" onclick="openMail(${i})">
-        <div class="mail-from">
-          <span>${escHtml(mail.from_address || mail.from || 'unknown@domain.com')}</span>
-        </div>
-        <div class="mail-subject">${escHtml(mail.subject || '(Tanpa Subjek)')}</div>
-        <div class="mail-time">${escHtml(mail.date || mail.received_at || '—')}</div>
-      </div>
-    `).join('');
+    body.innerHTML = state.mails.map((raw, i) => {
+      const mail = normalizeMail(raw);
+      return `
+        <div class="mail-item unread" onclick="openMail(${i})">
+          <div class="mail-from">${escHtml(mail.from)}</div>
+          <div class="mail-subject">${escHtml(mail.subject)}</div>
+          <div class="mail-time">${escHtml(mail.time)}</div>
+        </div>`;
+    }).join('');
   }
 
   // ── OPEN MAIL ──────────────────────────────────────────
   function openMail(index) {
-    const mail = state.mails[index];
-    if (!mail) return;
+    const raw = state.mails[index];
+    if (!raw) return;
 
-    document.getElementById('modalSubject').textContent = mail.subject || '(Tanpa Subjek)';
-    document.getElementById('modalFrom').textContent    = `Dari: ${mail.from_address || mail.from || '—'}  ·  ${mail.date || mail.received_at || ''}`;
+    const mail = normalizeMail(raw);
 
-    const content    = document.getElementById('modalContent');
-    const htmlBody   = mail.html_body || mail.body_html || mail.html;
-    const textBody   = mail.text_body || mail.body || mail.text || mail.message || '';
+    document.getElementById('modalSubject').textContent =
+      mail.subject;
+    document.getElementById('modalFrom').textContent =
+      `Dari: ${mail.from}  ·  ${mail.time}`;
 
-    if (htmlBody) {
-      content.className = 'mail-content-html';
+    const contentEl = document.getElementById('modalContent');
+
+    if (mail.html) {
+      contentEl.className = 'mail-content-html';
+      contentEl.innerHTML = '';
+
       const iframe = document.createElement('iframe');
-      iframe.sandbox = 'allow-same-origin';
-      content.innerHTML = '';
-      content.appendChild(iframe);
-      const doc = iframe.contentDocument || iframe.contentWindow.document;
-      doc.open(); doc.write(htmlBody); doc.close();
-      iframe.style.height = Math.max(doc.body.scrollHeight, 300) + 'px';
+      iframe.setAttribute('sandbox', 'allow-same-origin');
+      iframe.setAttribute('scrolling', 'no');
+      contentEl.appendChild(iframe);
+
+      // Tulis konten ke iframe setelah dimasukkan ke DOM
+      requestAnimationFrame(() => {
+        const doc = iframe.contentDocument || iframe.contentWindow.document;
+        doc.open();
+        doc.write(mail.html);
+        doc.close();
+
+        // Auto-resize iframe sesuai konten
+        const resize = () => {
+          try {
+            const h = doc.body ? doc.body.scrollHeight : 300;
+            iframe.style.height = Math.max(h, 300) + 'px';
+          } catch (e) { iframe.style.height = '400px'; }
+        };
+        iframe.onload = resize;
+        setTimeout(resize, 300);
+      });
+
     } else {
-      content.className = 'mail-content';
-      content.textContent = textBody || JSON.stringify(mail, null, 2);
+      contentEl.className = 'mail-content';
+      contentEl.textContent = mail.text || JSON.stringify(raw, null, 2);
     }
 
     document.getElementById('mailModal').classList.remove('hidden');
@@ -828,11 +881,18 @@
   function closeModal() {
     document.getElementById('mailModal').classList.add('hidden');
     document.body.style.overflow = '';
+    // Kosongkan iframe biar tidak memory leak
+    const iframe = document.querySelector('#modalContent iframe');
+    if (iframe) iframe.src = 'about:blank';
   }
 
-  // Close modal on overlay click
   document.getElementById('mailModal').addEventListener('click', function(e) {
     if (e.target === this) closeModal();
+  });
+
+  // Keyboard ESC untuk tutup modal
+  document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape') closeModal();
   });
 
   // ── AUTO REFRESH ───────────────────────────────────────
@@ -843,7 +903,6 @@
     state.countdownTimer = setInterval(() => {
       state.countdown--;
       updateCountdownUI();
-
       if (state.countdown <= 0) {
         state.countdown = REFRESH_INTERVAL;
         checkMail();
@@ -852,21 +911,23 @@
   }
 
   function stopAutoRefresh() {
-    clearInterval(state.refreshTimer);
     clearInterval(state.countdownTimer);
+    state.countdownTimer = null;
   }
 
   function updateCountdownUI() {
     const pct = (state.countdown / REFRESH_INTERVAL) * 100;
-    document.getElementById('refreshBar').style.width = pct + '%';
-    document.getElementById('refreshCountdown').textContent =
-      `⟳ Refresh otomatis dalam ${state.countdown} detik`;
+    const bar = document.getElementById('refreshBar');
+    const lbl = document.getElementById('refreshCountdown');
+    if (bar) bar.style.width = pct + '%';
+    if (lbl) lbl.textContent = `⟳ Refresh otomatis dalam ${state.countdown} detik`;
   }
 
   function updateLastRefresh() {
     const now = new Date();
-    document.getElementById('lastRefresh').textContent =
-      `Terakhir: ${now.getHours().toString().padStart(2,'0')}:${now.getMinutes().toString().padStart(2,'0')}:${now.getSeconds().toString().padStart(2,'0')}`;
+    const el  = document.getElementById('lastRefresh');
+    if (el) el.textContent =
+      `Terakhir: ${pad(now.getHours())}:${pad(now.getMinutes())}:${pad(now.getSeconds())}`;
   }
 
   // ── DELETE EMAIL ───────────────────────────────────────
@@ -874,12 +935,13 @@
     if (!confirm('Yakin hapus email ini? Semua pesan akan hilang.')) return;
 
     stopAutoRefresh();
-    state = {
-      email: null, emailToken: null, expireTime: null,
-      mails: [], refreshTimer: null, countdown: REFRESH_INTERVAL, countdownTimer: null,
-    };
+    state.email      = null;
+    state.emailToken = null;
+    state.expireTime = null;
+    state.mails      = [];
+    state.countdown  = REFRESH_INTERVAL;
 
-    document.getElementById('emailState').style.display  = 'none';
+    document.getElementById('emailState').style.display   = 'none';
     document.getElementById('noEmailState').style.display = 'block';
 
     const btn = document.getElementById('createBtn');
@@ -893,7 +955,9 @@
   function formatDate(str) {
     if (!str) return '—';
     try {
-      return new Date(str).toLocaleString('id-ID', {
+      const d = new Date(str);
+      if (isNaN(d.getTime())) return str;
+      return d.toLocaleString('id-ID', {
         day: '2-digit', month: 'short', year: 'numeric',
         hour: '2-digit', minute: '2-digit'
       });
@@ -901,12 +965,14 @@
   }
 
   function escHtml(s) {
-    return String(s)
+    return String(s || '')
       .replace(/&/g, '&amp;')
       .replace(/</g, '&lt;')
       .replace(/>/g, '&gt;')
       .replace(/"/g, '&quot;');
   }
+
+  function pad(n) { return String(n).padStart(2, '0'); }
 </script>
 </body>
 </html>
