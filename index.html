@@ -88,7 +88,6 @@
     .no-email-state p { color: var(--muted); font-size: 14px; margin-bottom: 24px; max-width: 360px; margin-left: auto; margin-right: auto; }
     .feature-list { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; margin-bottom: 28px; }
     .feature-tag { background: var(--surface2); border: 1px solid var(--border); border-radius: 20px; padding: 6px 14px; font-family: var(--font-mono); font-size: 11px; color: var(--muted); }
-    /* DEBUG */
     #debugPanel { display:none; background: var(--surface2); border: 1px solid var(--border); border-radius: 12px; padding: 16px; margin-bottom: 20px; }
     #debugPanel.show { display: block; }
     #debugLog { font-family: var(--font-mono); font-size: 10px; color: var(--accent); white-space: pre-wrap; word-break: break-all; max-height: 220px; overflow-y: auto; margin-top: 8px; }
@@ -208,12 +207,13 @@
 <div class="toast" id="toast"></div>
 
 <script>
-  const API_BASE        = 'https://bintangapi.full.diskon.cloud/api/tempmail';
+  // ========== API BARU ==========
+  const API_BASE = 'https://api.synoxcloud.biz.id/tempmail';
   const REFRESH_INTERVAL = 10;
 
   const state = {
-    email:      null,   // alamat email (tampilan)
-    token:      null,   // email_token dari /create/ → dipakai ke /check/?token=
+    email:      null,
+    token:      null,   // visitor_id
     expireTime: null,
     mails:      [],
     timer:      null,
@@ -255,32 +255,26 @@
     } else { fb(); showToast('✅ Email tersalin!'); }
   }
 
-  /* ── CREATE ── */
+  /* ── CREATE EMAIL (API BARU) ── */
   async function createEmail() {
     const btn = document.getElementById('createBtn');
     btn.disabled = true;
     btn.innerHTML = '<span class="spinner"></span> Membuat...';
 
     try {
-      const res  = await fetch(`${API_BASE}/create/`);
+      const res = await fetch(`${API_BASE}/tempmail-create`);
       const json = await res.json();
       dbg('CREATE response', json);
 
       if (!res.ok) throw new Error(`HTTP ${res.status}`);
-
-      /*
-        Format yang diketahui:
-        { status: true, result: { data: { email, email_token, deleted_in } } }
-      */
-      const data = json?.result?.data;
-      if (!data?.email || !data?.email_token) {
-        throw new Error(json?.result?.message || 'Format response tidak dikenali');
+      if (!json.status || !json.result?.address) {
+        throw new Error(json.message || 'Gagal membuat email');
       }
 
-      state.email      = data.email;
-      state.token      = data.email_token;   // ← INI yang dikirim ke /check/
-      state.expireTime = data.deleted_in || data.expires_at || null;
-      state.mails      = [];
+      state.email = json.result.address;
+      state.token = json.result.visitor_id;
+      state.expireTime = new Date(Date.now() + json.result.expire_minutes * 60000);
+      state.mails = [];
 
       dbg('CREATE parsed', { email: state.email, token: state.token });
 
@@ -301,7 +295,7 @@
     }
   }
 
-  /* ── CHECK MAIL ── */
+  /* ── CHECK MAIL (API BARU) ── */
   async function checkMail(spin = false) {
     if (!state.token) return;
 
@@ -311,49 +305,29 @@
     }
 
     try {
-      /*
-        Kirim token sebagai ?token=  (nama param yang paling umum di API ini)
-        Sekaligus kirim alternatif lain biar jaga-jaga
-      */
-      const params = new URLSearchParams({ token: state.token });
-      const url    = `${API_BASE}/check/?${params}`;
+      const url = `${API_BASE}/tempmail-inbox?id=${state.token}`;
       dbg('CHECK request', { url, token: state.token });
 
-      const res  = await fetch(url);
+      const res = await fetch(url);
       const json = await res.json();
       dbg('CHECK response', json);
 
       if (!res.ok) throw new Error(`HTTP ${res.status}`);
 
-      /*
-        Kemungkinan format response check:
-        A: { status: true, result: { data: { mailbox, messages: [...] } } }
-        B: { status: true, result: { data: [...] } }
-        C: { status: true, result: [...] }
-        D: { status: "success", data: { messages: [...] } }
-      */
-      let messages = null;
-
-      if (Array.isArray(json?.result?.data?.messages)) {
-        messages = json.result.data.messages;                  // A
-      } else if (Array.isArray(json?.result?.data)) {
-        messages = json.result.data;                           // B
-      } else if (Array.isArray(json?.result)) {
-        messages = json.result;                                // C
-      } else if (Array.isArray(json?.data?.messages)) {
-        messages = json.data.messages;                         // D
-      } else if (json?.result?.status === 'error') {
-        throw new Error(json.result.message);                  // token invalid dll
-      }
-
-      if (messages !== null) {
-        state.mails = messages;
+      // Format response baru: { status: true, result: { messages: [...] } }
+      if (json.status && json.result?.messages) {
+        state.mails = json.result.messages;
         renderInbox();
+      } else if (json.status && json.result?.message === 'No emails found') {
+        // Tidak ada email
+        state.mails = [];
+        renderInbox();
+      } else {
+        throw new Error(json.message || 'Gagal cek email');
       }
 
     } catch (e) {
       dbg('CHECK error', { message: e.message });
-      // hanya tampilkan ke user kalau manual refresh
       if (spin) showToast('⚠️ ' + e.message);
     } finally {
       if (spin) {
@@ -385,9 +359,10 @@
     }
 
     body.innerHTML = state.mails.map((m, i) => {
-      const from    = m.from_email || m.from_address || m.sender || m.from || 'unknown@domain.com';
+      // Sesuaikan field dari API baru
+      const from    = m.from || m.sender || m.from_email || 'unknown@domain.com';
       const subject = m.subject || '(Tanpa Subjek)';
-      const time    = m.receivedAt || m.received_at || m.date || m.createdAt || '—';
+      const time    = m.date || m.receivedAt || m.createdAt || '—';
       return `
         <div class="mail-item unread" onclick="openMail(${i})">
           <div class="mail-from">${esc(from)}</div>
@@ -402,12 +377,11 @@
     const m = state.mails[i];
     if (!m) return;
 
-    const from    = m.from_email || m.from_address || m.sender || m.from || '—';
+    const from    = m.from || m.sender || m.from_email || '—';
     const subject = m.subject || '(Tanpa Subjek)';
-    const time    = m.receivedAt || m.received_at || m.date || '—';
-    // field "content" = HTML body di API ini (terbukti dari screenshot sebelumnya)
-    const html    = m.content || m.html_body || m.body_html || m.html || null;
-    const text    = m.text_body || m.body || m.text || m.message || '';
+    const time    = m.date || m.receivedAt || m.createdAt || '—';
+    const html    = m.html || m.content || m.body_html || null;
+    const text    = m.text || m.body || m.message || '';
 
     document.getElementById('modalSubject').textContent = subject;
     document.getElementById('modalFrom').textContent    = `Dari: ${from}  ·  ${time}`;
